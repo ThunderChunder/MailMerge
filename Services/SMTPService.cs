@@ -31,20 +31,20 @@ namespace MailMerge.Services
             var spreadSheet = _ExcelReader.Create2DList();
             //stores column headers from excel spreadsheet 
             var keys = spreadSheet[0].ToArray();
+            Console.WriteLine(keys[1]);
 
-            for(int i = 0; i < spreadSheet.Count; i++)
+            spreadSheet.RemoveAt(0);
+
+            foreach(var row in spreadSheet)
             {
-                for(int j = 0; j < spreadSheet.Count; j++)
-                {
-                    InterpolateEmail(emailTemplate, spreadSheet[j], keys);
-                    SendMail(emailTemplate);
-                }
+                var parsedEmail = InterpolateEmail(emailTemplate, row, keys);
+                SendMail(parsedEmail);
             }
             
         }
         public async Task SendMail(EmailTemplate emailTemplate)
         {
-            Console.WriteLine(emailTemplate.Subject + emailTemplate.Body);
+            Console.WriteLine(emailTemplate.Recipient +emailTemplate.Subject + emailTemplate.Body);
 
             MailAddress from = new MailAddress(_Configuration["SenderEmailAddress"]);
             MailAddress to = new MailAddress(emailTemplate.Recipient);
@@ -56,7 +56,7 @@ namespace MailMerge.Services
             message.Subject = emailTemplate.Subject;
             message.SubjectEncoding = System.Text.Encoding.UTF8;
 
-            //await Task.Run(() => SmtpClient.SendAsync(message, ""));
+            await Task.Run(() => SmtpClient.SendAsync(message, ""));
 
             cleanUpMessage(message);
         }
@@ -66,9 +66,10 @@ namespace MailMerge.Services
             message.Dispose();
         }
 
-        public void InterpolateEmail(EmailTemplate emailTemplate, List<string> spreadSheet, string[] keys)
+        public EmailTemplate InterpolateEmail(EmailTemplate emailTemplate, List<string> spreadSheet, string[] keys)
         {
-            EmailInterpolation.MailMerge(emailTemplate, spreadSheet, keys);
+            //MailMerge returns new EmailTemplate obj
+            return EmailInterpolation.MailMerge(emailTemplate, spreadSheet, keys);
         }
 
     }

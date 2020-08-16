@@ -7,18 +7,22 @@ namespace MailMerge.Processors
 {
     public class EmailInterpolation
     {
-        public void MailMerge(EmailTemplate emailTemplate, List<string> spreadSheet, string[] Keys)
+        public EmailTemplate MailMerge(EmailTemplate emailTemplate, List<string> spreadSheet, string[] Keys)
         {
-            var i = 0;
+            EmailTemplate temp = new EmailTemplate();
+            int i = 0;
             foreach(var cell in spreadSheet)
             {
-                // Console.WriteLine(Keys[i]);
-                Regex regex = new Regex("{{"+Keys[i]+"}}");
-                emailTemplate.Recipient = regex.Replace(emailTemplate.Recipient, spreadSheet[i]);
-                emailTemplate.Subject = regex.Replace(emailTemplate.Subject, spreadSheet[i]);
-                emailTemplate.Body = regex.Replace(emailTemplate.Body, spreadSheet[i]);
+                // Regex regex = new Regex("{{"+Keys[i]+"}}");
+                // temp.Recipient = regex.Replace(emailTemplate.Recipient, cell);
+                // temp.Subject = regex.Replace(emailTemplate.Subject, cell);
+                // temp.Body = regex.Replace(emailTemplate.Body, cell);
+                temp.Recipient = emailTemplate.Recipient.Replace("{{"+Keys[i]+"}}", cell);
+                temp.Subject = emailTemplate.Subject.Replace("{{"+Keys[i]+"}}", cell);
+                temp.Body = emailTemplate.Body.Replace("{{"+Keys[i]+"}}", cell);
                 i++;
             }
+            return temp;
         }
     }
 }

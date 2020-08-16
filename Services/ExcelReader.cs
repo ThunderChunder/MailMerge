@@ -11,7 +11,7 @@ namespace MailMerge.Services
         public List<List<string>> Create2DList()
         {
             List<List<string>> spreadSheet = new List<List<string>>();
-            List<string> tempList;
+            List<string> tempList = new List<string>();;
 
             var path = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot/spreadsheets", "spreadsheet.xlsx");
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -19,15 +19,23 @@ namespace MailMerge.Services
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    while (reader.Read()) //Each ROW
+                    do
                     {
-                        tempList = new List<string>();
-                        for (int column = 0; column < reader.FieldCount; column++)
+                        while (reader.Read()) //Each ROW
                         {
-                            tempList.Add(reader.GetValue(column).ToString());
+                            for(int column = 0; column < reader.FieldCount; column++)
+                            {
+                                tempList.Clear();
+                                try
+                                {
+                                    tempList.Add(reader.GetString(column));
+                                }
+                                catch(NullReferenceException e){Console.WriteLine(e);}
+                                
+                            }
+                            spreadSheet.Add(tempList);
                         }
-                        spreadSheet.Add(tempList);
-                    }
+                    } while (reader.NextResult());
                 }
             }
             return spreadSheet;
