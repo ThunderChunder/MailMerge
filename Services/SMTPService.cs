@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 using MailMerge.Contracts;
 using MailMerge.Models;
@@ -19,14 +20,15 @@ namespace MailMerge.Services
             _Configuration = Configuration;
             //Sets Smtp Server to outlook domain as specified in appsettings
             SmtpClient = new SmtpClient(_Configuration["OutLookSMTPServer"]);
+            //Used in mail merge, replace {{ var }} with excel values
             EmailInterpolation = new EmailInterpolation();
+            //Used to read excel spreadsheet and return 2D list
             _ExcelReader = excelReader;
         }
         public void ProcessEmails(EmailTemplate emailTemplate)
         {
             var spreadSheet = _ExcelReader.Create2DList();
-            Console.WriteLine(spreadSheet[0][0]+spreadSheet[2][0]);
-            InterpolateEmail(emailTemplate);
+            InterpolateEmail(emailTemplate, spreadSheet);
             SendMail(emailTemplate);
         }
         public void SendMail(EmailTemplate emailTemplate)
@@ -53,9 +55,9 @@ namespace MailMerge.Services
             message.Dispose();
         }
 
-        public void InterpolateEmail(EmailTemplate emailTemplate)
+        public void InterpolateEmail(EmailTemplate emailTemplate, List<List<string>> spreadSheet)
         {
-            EmailInterpolation.MailMerge(emailTemplate);
+            EmailInterpolation.MailMerge(emailTemplate, spreadSheet);
         }
 
     }

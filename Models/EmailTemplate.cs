@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace MailMerge.Models
 {
@@ -11,5 +12,7 @@ namespace MailMerge.Models
         public string Subject { get; set; }
         [Required]
         public string Body { get; set; }
+        [Required]
+        public IFormFile file {get; set;}
     }
 }

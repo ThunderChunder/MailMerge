@@ -8,7 +8,7 @@ namespace MailMerge.Services
     {
         public void WriteFileToDisk(IFormFile file, string SavePath)
         {
-            if (file!=null)
+            if (file!=null || SavePath != null)
             {
                 using(var stream = new FileStream(SavePath, FileMode.Create))
                 {

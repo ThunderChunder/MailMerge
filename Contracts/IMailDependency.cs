@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MailMerge.Models;
 
 namespace MailMerge.Contracts
