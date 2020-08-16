@@ -13,22 +13,24 @@ namespace MailMerge.Services
         private readonly IConfiguration _Configuration;
         private SmtpClient SmtpClient;
         private EmailInterpolation EmailInterpolation;
-        public SMTPService(IConfiguration Configuration)
+        private IExcelReader _ExcelReader; 
+        public SMTPService(IConfiguration Configuration, IExcelReader excelReader)
         {
             _Configuration = Configuration;
             //Sets Smtp Server to outlook domain as specified in appsettings
             SmtpClient = new SmtpClient(_Configuration["OutLookSMTPServer"]);
             EmailInterpolation = new EmailInterpolation();
+            _ExcelReader = excelReader;
         }
         public void ProcessEmails(EmailTemplate emailTemplate)
         {
+            var spreadSheet = _ExcelReader.Create2DList();
+            Console.WriteLine(spreadSheet[0][0]+spreadSheet[2][0]);
             InterpolateEmail(emailTemplate);
             SendMail(emailTemplate);
         }
         public void SendMail(EmailTemplate emailTemplate)
         {
-            InterpolateEmail(emailTemplate);
-
             Console.WriteLine(emailTemplate.Subject + emailTemplate.Body);
 
             MailAddress from = new MailAddress(_Configuration["SenderEmailAddress"]);

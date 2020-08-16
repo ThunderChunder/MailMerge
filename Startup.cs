@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MailMerge.Contracts;
+using MailMerge.Processors;
 using MailMerge.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,7 @@ namespace MailMerge
         {
             services.AddScoped<IMailDependency, SMTPService>();
             services.AddScoped<IFileWriter, FileWriterService>();
+            services.AddScoped<IExcelReader, ExcelReader>();
             services.AddControllersWithViews();
         }
 
