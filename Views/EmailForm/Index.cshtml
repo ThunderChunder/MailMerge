@@ -1,0 +1,36 @@
+﻿@model MailMerge.Models.EmailTemplate
+
+<div class="border rounded container shadow" style="margin-top: 7%;">
+    <br />
+    <h2 class="text-info row justify-content-center">Email Template</h2>
+    <br />
+
+    <form method="post" asp-controller="EmailForm" asp-action="onPost" class="text-center">
+        <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+        <div class="form-group row justify-content-center">
+            <div class="col-6">
+                <input asp-for="Recipient" class="form-control" placeholder="Recipient" />
+                <span asp-validation-for="Recipient" class="text-danger"></span>            </div>
+            </div>
+        <div class="form-group row justify-content-center">
+            <div class="col-6">
+                <input asp-for="Subject" class="form-control" placeholder="Subject" />
+                <span asp-validation-for="Subject" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row justify-content-center">
+            <div class="col-6">
+                <textarea asp-for="Body" class="form-control" placeholder="Body" rows="7"></textarea>
+                <span asp-validation-for="Body" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row justify-content-center">
+            <div class="col-3">
+                <input type="submit" value="Upload" class="btn btn-primary form-control">
+            </div>
+            <div class="col-3" style="padding-bottom: 5%;">
+                <a asp-controller="EmailForm" class="btn btn-info form-control text-white">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
