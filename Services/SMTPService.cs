@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using MailMerge.Contracts;
 using MailMerge.Models;
 using MailMerge.Processors;
@@ -28,10 +29,20 @@ namespace MailMerge.Services
         public void ProcessEmails(EmailTemplate emailTemplate)
         {
             var spreadSheet = _ExcelReader.Create2DList();
-            InterpolateEmail(emailTemplate, spreadSheet);
-            SendMail(emailTemplate);
+            //stores column headers from excel spreadsheet 
+            var keys = spreadSheet[0].ToArray();
+
+            for(int i = 0; i < spreadSheet.Count; i++)
+            {
+                for(int j = 0; j < spreadSheet.Count; j++)
+                {
+                    InterpolateEmail(emailTemplate, spreadSheet[j], keys);
+                    SendMail(emailTemplate);
+                }
+            }
+            
         }
-        public void SendMail(EmailTemplate emailTemplate)
+        public async Task SendMail(EmailTemplate emailTemplate)
         {
             Console.WriteLine(emailTemplate.Subject + emailTemplate.Body);
 
@@ -45,7 +56,7 @@ namespace MailMerge.Services
             message.Subject = emailTemplate.Subject;
             message.SubjectEncoding = System.Text.Encoding.UTF8;
 
-            SmtpClient.SendAsync(message, "");
+            //await Task.Run(() => SmtpClient.SendAsync(message, ""));
 
             cleanUpMessage(message);
         }
@@ -55,9 +66,9 @@ namespace MailMerge.Services
             message.Dispose();
         }
 
-        public void InterpolateEmail(EmailTemplate emailTemplate, List<List<string>> spreadSheet)
+        public void InterpolateEmail(EmailTemplate emailTemplate, List<string> spreadSheet, string[] keys)
         {
-            EmailInterpolation.MailMerge(emailTemplate, spreadSheet);
+            EmailInterpolation.MailMerge(emailTemplate, spreadSheet, keys);
         }
 
     }
