@@ -26,6 +26,7 @@ namespace MailMerge
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IMailDependency, SMTPService>();
+            services.AddScoped<IFileWriter, FileWriterService>();
             services.AddControllersWithViews();
         }
 
