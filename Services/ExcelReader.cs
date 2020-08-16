@@ -8,32 +8,33 @@ namespace MailMerge.Services
 {
     public class ExcelReader: IExcelReader
     {
-        public List<List<string>> Create2DList()
+        public string[,] Create2DArray()
         {
-            List<List<string>> spreadSheet = new List<List<string>>();
-            List<string> tempList = new List<string>();;
-
+            string[,] spreadSheet;
+            string[] tempList;
+            int row = 0;
             var path = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot/spreadsheets", "spreadsheet.xlsx");
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
+                    spreadSheet = new string[reader.FieldCount, reader.RowCount];
+                    tempList = new string[reader.FieldCount];
                     do
                     {
                         while (reader.Read()) //Each ROW
                         {
                             for(int column = 0; column < reader.FieldCount; column++)
                             {
-                                tempList.Clear();
                                 try
                                 {
-                                    tempList.Add(reader.GetString(column));
+                                    spreadSheet[row, column] = reader.GetString(column);
                                 }
                                 catch(NullReferenceException e){Console.WriteLine(e);}
                                 
                             }
-                            spreadSheet.Add(tempList);
+                            row++;
                         }
                     } while (reader.NextResult());
                 }

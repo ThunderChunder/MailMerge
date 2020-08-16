@@ -28,18 +28,18 @@ namespace MailMerge.Services
         }
         public void ProcessEmails(EmailTemplate emailTemplate)
         {
-            var spreadSheet = _ExcelReader.Create2DList();
-            //stores column headers from excel spreadsheet 
-            var keys = spreadSheet[0].ToArray();
-            Console.WriteLine(keys[1]);
-
-            spreadSheet.RemoveAt(0);
+            var spreadSheet = _ExcelReader.Create2DArray();
 
             foreach(var row in spreadSheet)
             {
-                var parsedEmail = InterpolateEmail(emailTemplate, row, keys);
-                SendMail(parsedEmail);
+                Console.WriteLine(row);
             }
+            var parsedEmail = InterpolateEmail(emailTemplate, spreadSheet);
+            foreach(var x in parsedEmail)
+            {
+                Console.WriteLine(x.Body);
+            }
+            //SendMail(parsedEmail);
             
         }
         public async Task SendMail(EmailTemplate emailTemplate)
@@ -66,10 +66,10 @@ namespace MailMerge.Services
             message.Dispose();
         }
 
-        public EmailTemplate InterpolateEmail(EmailTemplate emailTemplate, List<string> spreadSheet, string[] keys)
+        public List<EmailTemplate> InterpolateEmail(EmailTemplate emailTemplate, string[,] spreadSheet)
         {
             //MailMerge returns new EmailTemplate obj
-            return EmailInterpolation.MailMerge(emailTemplate, spreadSheet, keys);
+            return EmailInterpolation.MailMerge(emailTemplate, spreadSheet);
         }
 
     }

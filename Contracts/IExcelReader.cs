@@ -4,6 +4,6 @@ namespace MailMerge.Contracts
 {
     public interface IExcelReader
     {
-         public List<List<string>> Create2DList();
+         public string[,] Create2DArray();
     }
 }
