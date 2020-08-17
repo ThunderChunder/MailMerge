@@ -11,7 +11,7 @@ namespace MailMerge.Processors
         public List<EmailTemplate> MailMerge(EmailTemplate emailTemplate, DataTable spreadSheet)
         {
             List<EmailTemplate> emailList = new List<EmailTemplate>();
-            EmailTemplate temp = new EmailTemplate();
+            EmailTemplate temp = new EmailTemplate(emailTemplate);
 
              for (var i = 1; i < spreadSheet.Rows.Count; i++)
             {
@@ -19,7 +19,7 @@ namespace MailMerge.Processors
                 {
                    // temp.Recipient = emailTemplate.Recipient.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
                    // temp.Subject = emailTemplate.Subject.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
-                    temp.Body = emailTemplate.Body.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
+                    temp.Body = temp.Body.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
                     // Regex regex = new Regex("{{"+spreadSheet.Rows[0][j].ToString()+"}}");
                     // //Console.WriteLine("{{"+spreadSheet.Rows[0][j].ToString()+"}}");
                     // //temp.Recipient = regex.Replace(eiailTemplate.Recipient, spreadSheet.Rows[i][j].ToString());
