@@ -17,27 +17,15 @@ namespace MailMerge.Processors
             {
                 for (var j = 0; j < spreadSheet.Columns.Count; j++)
                 {
-                   // temp.Recipient = emailTemplate.Recipient.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
-                   // temp.Subject = emailTemplate.Subject.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
+                    temp.Recipient = temp.Recipient.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
+                    temp.Subject = temp.Subject.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
                     temp.Body = temp.Body.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
-                    // Regex regex = new Regex("{{"+spreadSheet.Rows[0][j].ToString()+"}}");
-                    // //Console.WriteLine("{{"+spreadSheet.Rows[0][j].ToString()+"}}");
-                    // //temp.Recipient = regex.Replace(eiailTemplate.Recipient, spreadSheet.Rows[i][j].ToString());
-                    // //temp.Subject = regex.Replace(emailTemplate.Subject, spreadSheet.Rows[i][j].ToString());
-                    // temp.Body = regex.Replace(emailTemplate.Body, spreadSheet.Rows[i][j].ToString());
-                    Console.WriteLine(temp.Body);
                 }
                 emailList.Add(new EmailTemplate(temp));
             }
-            // Regex regex = new Regex("{{"+spreadSheet.Rows[0][0].ToString()+"}}");
-            // temp.Body = regex.Replace(emailTemplate.Body, spreadSheet.Rows[1][0].ToString());
-            // //Regex r = new Regex("{{"+spreadSheet.Rows[0][1].ToString()+"}}");
-            // temp.Subject = regex.Replace(emailTemplate.Subject, spreadSheet.Rows[1][0].ToString());
-            // Console.WriteLine(temp.Subject+temp.Body+emailTemplate.Body);
-
             foreach(var x in emailList)
             {
-                //Console.WriteLine(x.Body);
+                Console.WriteLine(x.Subject+x.Body);
             }
             return emailList;
         }
