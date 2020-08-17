@@ -70,7 +70,6 @@ namespace MailMerge.Services
 
         public List<EmailTemplate> InterpolateEmail(EmailTemplate emailTemplate, DataTable spreadSheet)
         {
-            //MailMerge returns new EmailTemplate obj
             return EmailInterpolation.MailMerge(emailTemplate, spreadSheet);
         }
 
