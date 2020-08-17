@@ -22,6 +22,7 @@ namespace MailMerge.Processors
                     temp.Body = temp.Body.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
                 }
                 emailList.Add(new EmailTemplate(temp));
+                temp = new EmailTemplate(emailTemplate);
             }
             foreach(var x in emailList)
             {

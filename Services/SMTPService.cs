@@ -32,35 +32,31 @@ namespace MailMerge.Services
             var dataSet = _ExcelReader.CreateDataSet();
             var spreadSheet = dataSet.Tables[0];//Tables is array of sheets from excel file
            
-            // foreach(var row in spreadSheet)
-            // {
-            //     Console.WriteLine(row);
-            // }
-            var parsedEmail = InterpolateEmail(emailTemplate, spreadSheet);
-            // foreach(var x in parsedEmail)
-            // {
-            //     Console.WriteLine(x.Body);
-            // }
-            //SendMail(parsedEmail);
+            var parsedEmailList = InterpolateEmail(emailTemplate, spreadSheet);
+
+            SendMail(parsedEmailList);
             
         }
-        public async Task SendMail(EmailTemplate emailTemplate)
+        public async Task SendMail(List<EmailTemplate> emailTemplateList)
         {
-            Console.WriteLine(emailTemplate.Recipient +emailTemplate.Subject + emailTemplate.Body);
+            foreach(var email in emailTemplateList)
+            {
+                Console.WriteLine(email.Recipient +email.Subject + email.Body);
 
-            MailAddress from = new MailAddress(_Configuration["SenderEmailAddress"]);
-            MailAddress to = new MailAddress(emailTemplate.Recipient);
-            MailMessage message = new MailMessage(from, to);
+                MailAddress from = new MailAddress(_Configuration["SenderEmailAddress"]);
+                MailAddress to = new MailAddress(email.Recipient);
+                MailMessage message = new MailMessage(from, to);
 
-            message.Body = emailTemplate.Body;
-            message.BodyEncoding =  System.Text.Encoding.UTF8;
+                message.Body = email.Body;
+                message.BodyEncoding =  System.Text.Encoding.UTF8;
 
-            message.Subject = emailTemplate.Subject;
-            message.SubjectEncoding = System.Text.Encoding.UTF8;
+                message.Subject = email.Subject;
+                message.SubjectEncoding = System.Text.Encoding.UTF8;
 
-            await Task.Run(() => SmtpClient.SendAsync(message, ""));
+                await Task.Run(() => SmtpClient.SendAsync(message, ""));
 
-            cleanUpMessage(message);
+                cleanUpMessage(message);
+            }
         }
 
         public void cleanUpMessage(MailMessage message)
