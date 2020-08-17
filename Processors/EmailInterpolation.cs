@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text.RegularExpressions;
 using MailMerge.Models;
 
@@ -7,24 +8,36 @@ namespace MailMerge.Processors
 {
     public class EmailInterpolation
     {
-        public List<EmailTemplate> MailMerge(EmailTemplate emailTemplate, string[,] spreadSheet)
+        public List<EmailTemplate> MailMerge(EmailTemplate emailTemplate, DataTable spreadSheet)
         {
             List<EmailTemplate> emailList = new List<EmailTemplate>();
             EmailTemplate temp = new EmailTemplate();
 
-            for(int i = 0; i < spreadSheet.GetLength(0); i++)
+             for (var i = 1; i < spreadSheet.Rows.Count; i++)
             {
-                for(int j = 0; j < spreadSheet.GetLength(1); j++)
+                for (var j = 0; j < spreadSheet.Columns.Count; j++)
                 {
-                    temp.Recipient = emailTemplate.Recipient.Replace("{{"+spreadSheet[0,j]+"}}", spreadSheet[i,j]);
-                    temp.Subject = emailTemplate.Subject.Replace("{{"+spreadSheet[0,j]+"}}", spreadSheet[i,j]);
-                    temp.Body = emailTemplate.Body.Replace("{{"+spreadSheet[0,j]+"}}", spreadSheet[i,j]);
+                   // temp.Recipient = emailTemplate.Recipient.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
+                   // temp.Subject = emailTemplate.Subject.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
+                    temp.Body = emailTemplate.Body.Replace("{{"+spreadSheet.Rows[0][j]+"}}", spreadSheet.Rows[i][j].ToString());
+                    // Regex regex = new Regex("{{"+spreadSheet.Rows[0][j].ToString()+"}}");
+                    // //Console.WriteLine("{{"+spreadSheet.Rows[0][j].ToString()+"}}");
+                    // //temp.Recipient = regex.Replace(eiailTemplate.Recipient, spreadSheet.Rows[i][j].ToString());
+                    // //temp.Subject = regex.Replace(emailTemplate.Subject, spreadSheet.Rows[i][j].ToString());
+                    // temp.Body = regex.Replace(emailTemplate.Body, spreadSheet.Rows[i][j].ToString());
+                    Console.WriteLine(temp.Body);
                 }
-                emailList.Add(temp);
-                // Regex regex = new Regex("{{"+Keys[i]+"}}");
-                // temp.Recipient = regex.Replace(emailTemplate.Recipient, cell);
-                // temp.Subject = regex.Replace(emailTemplate.Subject, cell);
-                // temp.Body = regex.Replace(emailTemplate.Body, cell);
+                emailList.Add(new EmailTemplate(temp));
+            }
+            // Regex regex = new Regex("{{"+spreadSheet.Rows[0][0].ToString()+"}}");
+            // temp.Body = regex.Replace(emailTemplate.Body, spreadSheet.Rows[1][0].ToString());
+            // //Regex r = new Regex("{{"+spreadSheet.Rows[0][1].ToString()+"}}");
+            // temp.Subject = regex.Replace(emailTemplate.Subject, spreadSheet.Rows[1][0].ToString());
+            // Console.WriteLine(temp.Subject+temp.Body+emailTemplate.Body);
+
+            foreach(var x in emailList)
+            {
+                //Console.WriteLine(x.Body);
             }
             return emailList;
         }

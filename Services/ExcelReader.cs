@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using ExcelDataReader;
 using MailMerge.Contracts;
@@ -8,38 +9,42 @@ namespace MailMerge.Services
 {
     public class ExcelReader: IExcelReader
     {
-        public string[,] Create2DArray()
+        public DataSet CreateDataSet()
         {
-            string[,] spreadSheet;
-            string[] tempList;
-            int row = 0;
             var path = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot/spreadsheets", "spreadsheet.xlsx");
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read))
             {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                IExcelDataReader reader;
+
+                reader = ExcelDataReader.ExcelReaderFactory.CreateReader(stream);
+
+                var conf = new ExcelDataSetConfiguration
                 {
-                    spreadSheet = new string[reader.FieldCount, reader.RowCount];
-                    tempList = new string[reader.FieldCount];
-                    do
+                    ConfigureDataTable = _ => new ExcelDataTableConfiguration
                     {
-                        while (reader.Read()) //Each ROW
-                        {
-                            for(int column = 0; column < reader.FieldCount; column++)
-                            {
-                                try
-                                {
-                                    spreadSheet[row, column] = reader.GetString(column);
-                                }
-                                catch(NullReferenceException e){Console.WriteLine(e);}
-                                
-                            }
-                            row++;
-                        }
-                    } while (reader.NextResult());
-                }
+                        UseHeaderRow = false 
+                    }
+                };
+
+                return reader.AsDataSet(conf);
+
+                // var dataSet = reader.AsDataSet(conf);
+                // var dataTable = dataSet.Tables[0];
+
+                // // Now you can get data from each sheet by its index or its "name"
+
+                // for (var i = 0; i < dataTable.Rows.Count; i++)
+                // {
+                //     for (var j = 0; j < dataTable.Columns.Count; j++)
+                //     {
+                //         var data = dataTable.Rows[i][j];
+                //         Console.WriteLine(data);
+                //     }
+                // }
+                // return dataSet;
             }
-            return spreadSheet;
+
         }
     }
 }

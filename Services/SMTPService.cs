@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using MailMerge.Contracts;
@@ -28,17 +29,18 @@ namespace MailMerge.Services
         }
         public void ProcessEmails(EmailTemplate emailTemplate)
         {
-            var spreadSheet = _ExcelReader.Create2DArray();
-
-            foreach(var row in spreadSheet)
-            {
-                Console.WriteLine(row);
-            }
+            var dataSet = _ExcelReader.CreateDataSet();
+            var spreadSheet = dataSet.Tables[0];//Tables is array of sheets from excel file
+           
+            // foreach(var row in spreadSheet)
+            // {
+            //     Console.WriteLine(row);
+            // }
             var parsedEmail = InterpolateEmail(emailTemplate, spreadSheet);
-            foreach(var x in parsedEmail)
-            {
-                Console.WriteLine(x.Body);
-            }
+            // foreach(var x in parsedEmail)
+            // {
+            //     Console.WriteLine(x.Body);
+            // }
             //SendMail(parsedEmail);
             
         }
@@ -66,7 +68,7 @@ namespace MailMerge.Services
             message.Dispose();
         }
 
-        public List<EmailTemplate> InterpolateEmail(EmailTemplate emailTemplate, string[,] spreadSheet)
+        public List<EmailTemplate> InterpolateEmail(EmailTemplate emailTemplate, DataTable spreadSheet)
         {
             //MailMerge returns new EmailTemplate obj
             return EmailInterpolation.MailMerge(emailTemplate, spreadSheet);

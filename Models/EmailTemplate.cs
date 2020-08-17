@@ -14,5 +14,13 @@ namespace MailMerge.Models
         public string Body { get; set; }
         [Required]
         public IFormFile file {get; set;}
+
+        public EmailTemplate(){}
+        public EmailTemplate(EmailTemplate emailTemplate)
+        {
+            this.Recipient = emailTemplate.Recipient;
+            this.Subject = emailTemplate.Subject;
+            this.Body = emailTemplate.Body;
+        }
     }
 }
