@@ -53,56 +53,23 @@ namespace MailMerge.Services
             {
                 try
                 {
-                    MailAddress from = CreateMailAddress(_Configuration["SenderEmailAddress"]);
-                    MailAddress to = CreateMailAddress(email.Recipient);
-                    MailMessage message = CreateMailMessage(from, to);
-
-                    SetMessageSubject(message, email.Subject);
-                    SetSubjectEncoding(message, System.Text.Encoding.UTF8);
-                    SetMessageBody(message, email.Body);
-                    SetBodyEncoding(message, System.Text.Encoding.UTF8);
+                    MailAddress from = new MailAddress(_Configuration["SenderEmailAddress"]);
+                    MailAddress to = new MailAddress(email.Recipient);
+                    var message = new MailMessage(from, to)
+                    {
+                        Subject = email.Subject,
+                        SubjectEncoding =  System.Text.Encoding.UTF8,
+                        Body = email.Body,
+                        BodyEncoding = System.Text.Encoding.UTF8
+                    };
 
                     SmtpClient.Send(message);
 
-                    CleanUpMessage(message);
+                    message.Dispose();
                 }
                 catch (Exception e){Console.WriteLine(e.Message);}
             }
         }
-        public void SetMessageSubject(MailMessage message, string subject)
-        {
-            message.Subject = subject;
-        }
-
-        public void SetSubjectEncoding(MailMessage message, System.Text.Encoding encoding)
-        {
-            message.SubjectEncoding =  encoding;
-        }
-
-        public void SetBodyEncoding(MailMessage message, System.Text.Encoding encoding)
-        {
-            message.BodyEncoding =  encoding;
-        }
-        public void SetMessageBody(MailMessage message, string body)
-        {
-            message.Body = body;
-        }
-
-        public MailAddress CreateMailAddress(string address)
-        {
-            return new MailAddress(address);
-        }
-
-        public MailMessage CreateMailMessage(MailAddress from, MailAddress to)
-        {
-            return new MailMessage(from, to);
-        }
-
-        public void CleanUpMessage(MailMessage message)
-        {
-            message.Dispose();
-        }
-
         public List<EmailTemplate> InterpolateEmail(EmailTemplate emailTemplate, DataTable spreadSheet)
         {
             return EmailInterpolation.MailMerge(emailTemplate, spreadSheet);
