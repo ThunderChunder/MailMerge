@@ -16,7 +16,7 @@ namespace MailMerge.Services
         private readonly IConfiguration _Configuration;
         private SmtpClient SmtpClient;
         private EmailInterpolation EmailInterpolation;
-        private IExcelReader _ExcelReader; 
+        private readonly IExcelReader _ExcelReader; 
         public SMTPService(IConfiguration Configuration, IExcelReader excelReader)
         {
             _Configuration = Configuration;
@@ -32,34 +32,64 @@ namespace MailMerge.Services
             var dataSet = _ExcelReader.CreateDataSet();
             var spreadSheet = dataSet.Tables[0];//Tables is array of sheets from excel file
            
-            var parsedEmailList = InterpolateEmail(emailTemplate, spreadSheet);
+            var interpolatedEmailList = InterpolateEmail(emailTemplate, spreadSheet);
 
-            SendMail(parsedEmailList);
-            
+            SendMail(interpolatedEmailList);
         }
         public async Task SendMail(List<EmailTemplate> emailTemplateList)
         {
             foreach(var email in emailTemplateList)
             {
-                Console.WriteLine(email.Recipient +email.Subject + email.Body);
+                //Console.WriteLine(email.Recipient +email.Subject + email.Body);
 
-                MailAddress from = new MailAddress(_Configuration["SenderEmailAddress"]);
-                MailAddress to = new MailAddress(email.Recipient);
-                MailMessage message = new MailMessage(from, to);
+                MailAddress from = CreateMailAddress(_Configuration["SenderEmailAddress"]);
+                MailAddress to = CreateMailAddress(email.Recipient);
+                MailMessage message = CreateMailMessage(from, to);
 
-                message.Body = email.Body;
-                message.BodyEncoding =  System.Text.Encoding.UTF8;
+               
+                SetMessageSubject(message, email.Subject);
+                SetSubjectEncoding(message, System.Text.Encoding.UTF8);
+                SetMessageBody(message, email.Body);
+                SetBodyEncoding(message, System.Text.Encoding.UTF8);
 
-                message.Subject = email.Subject;
-                message.SubjectEncoding = System.Text.Encoding.UTF8;
+                Console.WriteLine("To: {0} \nSubject: {1} \nBody: {2}\n", message.To, message.Subject, message.Body);
 
-                await Task.Run(() => SmtpClient.SendAsync(message, ""));
+                //await Task.Run(() => SmtpClient.SendAsync(message, ""));
 
-                cleanUpMessage(message);
+                CleanUpMessage(message);
             }
         }
 
-        public void cleanUpMessage(MailMessage message)
+        public void SetMessageSubject(MailMessage message, string subject)
+        {
+            message.Subject = subject;
+        }
+
+        public void SetSubjectEncoding(MailMessage message, System.Text.Encoding encoding)
+        {
+            message.SubjectEncoding =  encoding;
+        }
+
+        public void SetBodyEncoding(MailMessage message, System.Text.Encoding encoding)
+        {
+            message.BodyEncoding =  encoding;
+        }
+        public void SetMessageBody(MailMessage message, string body)
+        {
+            message.Body = body;
+        }
+
+        public MailAddress CreateMailAddress(string address)
+        {
+            return new MailAddress(address);
+        }
+
+        public MailMessage CreateMailMessage(MailAddress from, MailAddress to)
+        {
+            return new MailMessage(from, to);
+        }
+
+        public void CleanUpMessage(MailMessage message)
         {
             message.Dispose();
         }

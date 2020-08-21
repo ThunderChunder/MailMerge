@@ -24,10 +24,6 @@ namespace MailMerge.Processors
                 emailList.Add(new EmailTemplate(temp));
                 temp = new EmailTemplate(emailTemplate);
             }
-            foreach(var x in emailList)
-            {
-                Console.WriteLine(x.Subject+x.Body);
-            }
             return emailList;
         }
     }
