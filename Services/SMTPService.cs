@@ -53,15 +53,15 @@ namespace MailMerge.Services
         }
         public void SendMail(List<EmailTemplate> emailTemplateList)
         {
+            var from = new MailAddress(
+                _Configuration.GetValue<string>("MailSettings:SenderEmailAddress")
+            );
             foreach(var email in emailTemplateList)
             {
                 try
                 {
-                    MailAddress from = new MailAddress(
-                        _Configuration.GetValue<string>("MailSettings:SenderEmailAddress")
-                    );
-                    MailAddress to = new MailAddress(email.Recipient);
-                    MailMessage message = new MailMessage(from, to)
+                    var to = new MailAddress(email.Recipient);
+                    var message = new MailMessage(from, to)
                     {
                         Subject = email.Subject,
                         SubjectEncoding =  System.Text.Encoding.UTF8,
