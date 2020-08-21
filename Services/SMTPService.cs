@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -21,11 +22,21 @@ namespace MailMerge.Services
         {
             _Configuration = Configuration;
             //Sets Smtp Server to outlook domain as specified in appsettings
-            SmtpClient = new SmtpClient(_Configuration["OutLookSMTPServer"]);
+            SmtpClient = GetMailClient();
             //Used in mail merge, replace {{ var }} with excel values
             EmailInterpolation = new EmailInterpolation();
             //Used to read excel spreadsheet and return 2D list
             _ExcelReader = excelReader;
+        }
+        public SmtpClient GetMailClient()
+        {
+            SmtpClient client = new SmtpClient(_Configuration["OutLookSMTPServer"]);
+            client.Port = 587;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.EnableSsl = true;
+            client.Credentials = new System.Net.NetworkCredential(_Configuration["SenderEmailAddress"], _Configuration["SenderEmailPassword"]);
+            return client;
         }
         public void ProcessEmails(EmailTemplate emailTemplate)
         {
@@ -36,30 +47,25 @@ namespace MailMerge.Services
 
             SendMail(interpolatedEmailList);
         }
-        public async Task SendMail(List<EmailTemplate> emailTemplateList)
+        public void SendMail(List<EmailTemplate> emailTemplateList)
         {
             foreach(var email in emailTemplateList)
             {
-                //Console.WriteLine(email.Recipient +email.Subject + email.Body);
-
                 MailAddress from = CreateMailAddress(_Configuration["SenderEmailAddress"]);
                 MailAddress to = CreateMailAddress(email.Recipient);
                 MailMessage message = CreateMailMessage(from, to);
 
-               
                 SetMessageSubject(message, email.Subject);
                 SetSubjectEncoding(message, System.Text.Encoding.UTF8);
                 SetMessageBody(message, email.Body);
                 SetBodyEncoding(message, System.Text.Encoding.UTF8);
 
-                Console.WriteLine("To: {0} \nSubject: {1} \nBody: {2}\n", message.To, message.Subject, message.Body);
-
-                //await Task.Run(() => SmtpClient.SendAsync(message, ""));
+                SmtpClient.Send(message);
 
                 CleanUpMessage(message);
+                break;
             }
         }
-
         public void SetMessageSubject(MailMessage message, string subject)
         {
             message.Subject = subject;
