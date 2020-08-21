@@ -51,19 +51,22 @@ namespace MailMerge.Services
         {
             foreach(var email in emailTemplateList)
             {
-                MailAddress from = CreateMailAddress(_Configuration["SenderEmailAddress"]);
-                MailAddress to = CreateMailAddress(email.Recipient);
-                MailMessage message = CreateMailMessage(from, to);
+                try
+                {
+                    MailAddress from = CreateMailAddress(_Configuration["SenderEmailAddress"]);
+                    MailAddress to = CreateMailAddress(email.Recipient);
+                    MailMessage message = CreateMailMessage(from, to);
 
-                SetMessageSubject(message, email.Subject);
-                SetSubjectEncoding(message, System.Text.Encoding.UTF8);
-                SetMessageBody(message, email.Body);
-                SetBodyEncoding(message, System.Text.Encoding.UTF8);
+                    SetMessageSubject(message, email.Subject);
+                    SetSubjectEncoding(message, System.Text.Encoding.UTF8);
+                    SetMessageBody(message, email.Body);
+                    SetBodyEncoding(message, System.Text.Encoding.UTF8);
 
-                SmtpClient.Send(message);
+                    SmtpClient.Send(message);
 
-                CleanUpMessage(message);
-                break;
+                    CleanUpMessage(message);
+                }
+                catch (Exception e){Console.WriteLine(e.Message);}
             }
         }
         public void SetMessageSubject(MailMessage message, string subject)
