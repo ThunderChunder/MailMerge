@@ -30,13 +30,17 @@ namespace MailMerge.Services
         }
         public SmtpClient GetMailClient()
         {
-            SmtpClient client = new SmtpClient(_Configuration["OutLookSMTPServer"]);
-            client.Port = 587;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.UseDefaultCredentials = false;
-            client.EnableSsl = true;
-            client.Credentials = new System.Net.NetworkCredential(_Configuration["SenderEmailAddress"], _Configuration["SenderEmailPassword"]);
-            return client;
+            return new SmtpClient(_Configuration.GetValue<string>("MailSettings:OutLookSMTPServer"))
+            {
+                Port = _Configuration.GetValue<int>("MailSettings:Port"),
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                EnableSsl = _Configuration.GetValue<bool>("MailSettings:EnableSSL"),
+                Credentials = new System.Net.NetworkCredential(
+                    _Configuration.GetValue<string>("MailSettings:SenderEmailAddress"), 
+                    _Configuration.GetValue<string>("MailSettings:SenderEmailPassword")
+                )
+            };
         }
         public void ProcessEmails(EmailTemplate emailTemplate)
         {
@@ -53,9 +57,11 @@ namespace MailMerge.Services
             {
                 try
                 {
-                    MailAddress from = new MailAddress(_Configuration["SenderEmailAddress"]);
+                    MailAddress from = new MailAddress(
+                        _Configuration.GetValue<string>("MailSettings:SenderEmailAddress")
+                    );
                     MailAddress to = new MailAddress(email.Recipient);
-                    var message = new MailMessage(from, to)
+                    MailMessage message = new MailMessage(from, to)
                     {
                         Subject = email.Subject,
                         SubjectEncoding =  System.Text.Encoding.UTF8,
