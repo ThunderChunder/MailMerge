@@ -25,7 +25,7 @@ namespace MailMerge.Services
             SmtpClient = GetMailClient();
             //Used in mail merge, replace {{ var }} with excel values
             EmailInterpolation = new EmailInterpolation();
-            //Used to read excel spreadsheet and return 2D list
+            //Used to read excel spreadsheet and return dataset
             _ExcelReader = excelReader;
         }
         public SmtpClient GetMailClient()
